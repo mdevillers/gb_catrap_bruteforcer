@@ -1,4 +1,4 @@
-## catrap gb game password bruteforcer
+## "Catrap" gameboy game password bruteforcer
 
 This program attempt to discover each valid password of the gameboy game "catrap".
 It iterates and tests the validity of each possible password combination, replicating the checks of the original game. 
