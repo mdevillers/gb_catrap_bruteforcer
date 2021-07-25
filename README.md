@@ -1,6 +1,7 @@
 ## catrap gb game password bruteforcer
 
-This program iterates and tests the validity of each possible password combination. 
+This program attempt to discover each valid password of the gameboy game "catrap".
+It iterates and tests the validity of each possible password combination, replicating the checks of the original game. 
 
 ## assemble (64-bit only)
 ```
@@ -14,9 +15,9 @@ rm bruteforcer.o
 ```
 ## output
 
-To remove level duplicates launch the script <gen_password.sh>
+To display the password levels without duplicates, launch the script <print_passwords.sh>
 ```
-bash ./gen_passwords.sh
+bash ./print_passwords.sh
 <level> <password>
 01 0803
 02 0H07

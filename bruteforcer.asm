@@ -3,12 +3,13 @@
  section .data
 ;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+; gameboy memory map
 ; D91B-DA1A
 map_1 times 64 db 0x80 
 ; DA1B-DA5A
 map_2 times 64 db 0x00
 
-; gd registers
+; gameboy registers
 a db 0
 b db 0
 c db 0
@@ -18,13 +19,13 @@ f db 0
 h db 0
 l db 0
 
-MAX_PWD_SIZE equ 4
+MAX_PWD_SIZE 			equ 4
+MAX_PWD_IDX 			equ 0x1F
 
-password_and_level times MAX_PWD_SIZE+5 db 0
-password_charset db '0123456789ABCEFGHJKLMNPQRTUVWXYZ', 0
+password_and_level 		times 	MAX_PWD_SIZE+5 	db 0
+password_charset 		db 		'0123456789ABCEFGHJKLMNPQRTUVWXYZ', 0
 
-MAX_PWD_IDX equ 0x1F
-pwdgen_idx times MAX_PWD_SIZE db 0
+pwdgen_idx 				times MAX_PWD_SIZE db 0
 
 ;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  section .bss
@@ -56,38 +57,33 @@ exit:
 ;---------------------------------------------------------------------------
  check_passwords:
 ;---------------------------------------------------------------------------
-
-    xor r15, r15
+    ; generates and check all combinations
+    xor r15, r15 ; nb of combinations
 
 .start:
-
     lea rdx, [MAX_PWD_SIZE - 1]
 
 .loop:
-    cmp byte[pwdgen_idx+rdx], MAX_PWD_IDX
-    je .inc_unit2
-
+    inc r15
     call generate_password
     call store_password_to_map
     call check_password
     or rax, rax
-    jne .continue
-    call print_password
+    je .found_password
 
 .continue:
-    inc r15
-
     inc byte[pwdgen_idx+rdx]
-    
+    cmp byte[pwdgen_idx+rdx], MAX_PWD_IDX
+    je .inc_unit2    
     jmp .loop
 
 .inc_unit2:
     sub rdx, 1
-    cmp rdx, -1
+    cmp rdx, -1 ; all combinaisons generated ?
     je .end_loop
     inc byte[pwdgen_idx+rdx]
     cmp byte[pwdgen_idx+rdx], MAX_PWD_IDX
-    je .inc_unit2
+    ja .inc_unit2
 
     lea rax, [rdx + 1]
 .loop_unit2:
@@ -97,6 +93,10 @@ exit:
     jne .loop_unit2
 
     jmp .start
+
+.found_password:
+    call print_password
+    jmp .continue
 
 .end_loop:
     ret
